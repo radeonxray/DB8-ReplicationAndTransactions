@@ -60,6 +60,8 @@ Flush the priviligies to confirm the new changes:
 FLUSH PRIVILEGES;
 ```
 
+----------------
+
 ### Setup Database
 
 Having now setup the basic things in your droplets, we now need to download and setup the Database.
@@ -101,7 +103,7 @@ Select the Schema to be used
 ```mysql
 use classicmodels
 ```
-
+-------
 
 ### Edit the mysqld.cnf
 
@@ -117,7 +119,7 @@ You should now be placed inside the file and be able to edit the files using Nan
 
 In your mysql.conf located at ```/etc/mysql/mysql.conf.d/mysqld.cnf``` change the following:
 
-Remember to replace [INSERT YOUR DROPLETS IP ADDRESS] with your droplets own ip. 
+*Remember to replace [INSERT YOUR DROPLETS IP ADDRESS] with your droplets own ip.* 
 ```shell
 bind-address	=[INSERT YOUR DROPLETS IP ADDRESS]
 server-id     = 3
@@ -140,7 +142,7 @@ relay-log  = /var/log/mysql/mysql-relay-bin.log
 ```
 
 
-After you have done all of the above changes to the ```mysqld.cnf```-file, restart mysql and its services with the following command:
+After you have done all of the above changes to the ```mysqld.cnf```-file, save and close the file, then restart mysql and its services with the following command:
 
 ```shell
 sudo service mysql restart
