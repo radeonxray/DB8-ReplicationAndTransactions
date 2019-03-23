@@ -41,27 +41,64 @@ Setup basic Mysql informaiton using the following command:
 ```shell
 sudo mysql_secure_installation
 ```
+After the installation is complete, login to MySQL `mysql -u [username] -p` (You should be prompted for at password) and create a new user (replace the username and password with something of your own choice):
+
+```mysql
+CREATE USER '[USERNAME]'@'%' IDENTIFIED BY '[PASSWORD]';
+```
+
+Grant priviliges to the new user:
+
+`GRANT ALL PRIVILEGES ON *.* TO '[UserName]'@'%' WITH GRANT OPTION;`
+
+Flush the priviligies to confirm the new changes:
+
+```mysql
+FLUSH PRIVILEGES;
+```
 
 ### Setup Database
 
+#### CreateTables.sql
+Download the 'CreateTables'-file file:
+
+`wget https://raw.githubusercontent.com/radeonxray/DB-Assignment6/master/CreateTables.sql`
+
+#### Classicmodels.sql
+
+There are 2 options to donwload the Database to your Droplet:
+
+##### Scp
 Copy the `classicmodels.sql`-file found in this github repo to your droplet.
 Download to your desktop and use the following command to copy to your droplet, remember to replace the placeholder information with the correct one:
 ```shell
 scp classicmodels.sql [username]@[dropletIP]:classicmodels.sql 
 ```
 
+##### Wget
+
+Download the `classicmodels.sql`-file directly from the repo and onto your droplet, using the following command:
+
+`wget https://github.com/radeonxray/DB8-ReplicationAndTransactions/blob/master/classicmodels.sql`
+
+
+#### Create the DB
+
+With the `classicmodels.sql`- and `CreateTables.sql`-file on your droplet, login to your MySQL and execute the following command to create the DB in your MySQL setup:
+
+```mysql
+source ./CreateTables.sql;
+```
+
+Select the Schema to be used
+
+```mysql
+use classicmodels
+```
+
+
 ### Access Mysql
 
-Use the following command to access your mysql:
-
-```shell
-mysql -u [username] -p 
-```
-You should be prompted for at password. 
-
-
-
-source ./CreateTables.sql;
 
 ### Droplet
 
@@ -106,15 +143,9 @@ sudo service mysql restart
 ```
 
 
-### MySQL
+### Setup Slave in MySQL
 
-Create a new user and replace the username and password with something of your own choice:
-
-```mysql
-CREATE USER '[USERNAME]'@'%' IDENTIFIED BY '[PASSWORD]';
-```
-
-Run the following command to setup the slave droplet with the slave-user:
+Run the following command in MySQL to setup the slave droplet with the slave-user:
 
 ***Important**: Check the Peergrade-handin for the file containing the correct script with the correct information! The command below is just a placeholder to show you what the command actually looks like*
 
