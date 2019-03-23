@@ -13,6 +13,8 @@ Slides: https://github.com/datsoftlyngby/soft2019spring-databases/blob/master/le
 
 - You will need login information to connect your slave-droplet with the master droplet. Please see the Peergrade-handin for a file containing the information. The guide will tell you need to use the information.
 
+- In the same file as mentioned above, you will also find the login information for the Master droplet, in which you need to execute the various queries to see the effect in your droplet
+
 -----
 
 ## Hand-in
@@ -37,6 +39,7 @@ apt-get upgrade
 sudo apt install mysql-server
 ```
 
+### Setup MySQL
 Setup basic Mysql informaiton using the following command:
 ```shell
 sudo mysql_secure_installation
@@ -59,23 +62,26 @@ FLUSH PRIVILEGES;
 
 ### Setup Database
 
+Having now setup the basic things in your droplets, we now need to download and setup the Database.
+
 #### CreateTables.sql
-Download the 'CreateTables'-file file:
+
+In your droplet, download the 'CreateTables'-file file:
 
 `wget https://raw.githubusercontent.com/radeonxray/DB-Assignment6/master/CreateTables.sql`
 
 #### Classicmodels.sql
 
-There are 2 options to donwload the Database to your Droplet:
+There are 2 options to download the Database to your Droplet (you only need to chose and do one of them!):
 
-##### Scp
+##### 1: Scp
 Copy the `classicmodels.sql`-file found in this github repo to your droplet.
 Download to your desktop and use the following command to copy to your droplet, remember to replace the placeholder information with the correct one:
 ```shell
 scp classicmodels.sql [username]@[dropletIP]:classicmodels.sql 
 ```
 
-##### Wget
+##### 2: Wget
 
 Download the `classicmodels.sql`-file directly from the repo and onto your droplet, using the following command:
 
@@ -97,12 +103,9 @@ use classicmodels
 ```
 
 
-### Access Mysql
+### Edit the mysqld.cnf
 
-
-### Droplet
-
-
+Now that we have setup the Database and a MySQL user, we need to configure MySQL a bit, in order to set it up as a slave.
 
 In Ubuntu 18.04, you will locate your config-file for MySQL a bit different than earlier versions. 
 Open your droplet and enter the following command:
@@ -120,6 +123,7 @@ bind-address	=[INSERT YOUR DROPLETS IP ADDRESS]
 server-id     = 3
 log_bin       = /var/log/mysql/mysql-bin.log
 ```
+*Note: There might be mutiple tester of this code and since the **server-id** has to be unique, you might want to use a random number between 3-999 if you get an error*
 
 Locate the following line:
 ```shell
@@ -143,7 +147,7 @@ sudo service mysql restart
 ```
 
 
-### Setup Slave in MySQL
+### Start Slave in MySQL
 
 Run the following command in MySQL to setup the slave droplet with the slave-user:
 
@@ -154,9 +158,18 @@ CHANGE MASTER TO MASTER_HOST='[CHECKPEERGRADEFORIP]',MASTER_USER='[CHECKPEERGRAD
 
 ```
 
+Having executed the correct query, run the following mysql command to start the slave:
 
-### Slave
+`start slave;`
 
+Then check the status of the slave with the following mysql command:
+
+`SHOW SLAVE STATUS\G`
+
+You really want to see ` Slave_IO_State` stating *Waiting for Master to send event*, and both `Slave_IO_Running` and ` Slave_SQL_Running` stating ´Yes´.
+
+If all the above has been successfully executed, you are now ready to run queries to the Master DB and see the effects in your slave Database!
+ 
 ### Test Queries
 
 #### Assignment 4
