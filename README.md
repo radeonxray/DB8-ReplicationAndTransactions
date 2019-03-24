@@ -86,7 +86,7 @@ SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 The reason we are creating a new user and not just stick with the 'root' user provided with mysql, is because we want to be able to remotely connect to the slave (hence why the '[username]'@'%' and not '[username]'@'localhost') through a program like [MySQL Workbench](https://dev.mysql.com/downloads/workbench/), and you don't want to expose the 'root' user to remote access in that way.
 
-Furthermore, one could agrue about giving the mysql user privileges to basically "everything" in the slave, but that discussion is for another day (:  
+Furthermore, one could argue about giving the mysql user privileges to basically "everything" in the slave, but that discussion is for another day (:  
 
 ----------------
 
@@ -111,7 +111,7 @@ Download to your desktop and use the following command to copy to your droplet, 
 scp classicmodels.sql [username]@[dropletIP]:classicmodels.sql 
 ```
 
-##### 2: Wget
+##### 2: Wget (the easiest)
 
 Download the `classicmodels.sql`-file directly from the repo and onto your droplet, using the following command:
 
@@ -135,7 +135,7 @@ use classicmodels
 
 ### Edit the mysqld.cnf
 
-Now that we have setup the Database and a MySQL user, we need to configure MySQL a bit, in order to set it up as a slave.
+Now that we have setup the Database in MySQL and a created a MySQL user within the slave-droplet, we need to configure MySQL a bit more, in order to set it up as a slave correctly.
 
 In Ubuntu 18.04, you will locate your config-file for MySQL a bit different than earlier versions. 
 Open your droplet and enter the following command:
