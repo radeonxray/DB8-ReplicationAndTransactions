@@ -14,13 +14,22 @@ You need to document enough of your server for your reviewer to be able to set-u
 
 -----
 
+## Review
+
+- Verify that you are able to set up your own slave of the database you review.
+- Verify that you can update the master database and see the changes to your database.
+
+-----
+
 ## VERY IMPORTANT
 
 - This guide for setting up a new Slave, has been created using a **Ubuntu Droplet 18.04**. If you are using an older Ubuntu-version, there might be some discrepancies!
 
-- You will need login information to connect your slave-droplet with the master droplet. Please see the Peergrade-handin for a file containing the information. The guide will tell you need to use the information.
+- You will need login information to connect your slave-droplet with the master droplet. Please see the Peergrade-handin for a file containing the information. The guide will tell you when to use the information from the file.
 
-- In the same file as mentioned above, you will also find the login information for the Master droplet, in which you need to execute the various queries to see the effect in your droplet
+- In the same file as mentioned above, you will also find the login information for the Master droplet, in which you need to execute the various queries to see the effect in your droplet (Please be nice to it, don't mess around).
+
+- Login information has also been provided to my own Slave-droplet, please also be nice to it, should you take a look.
 
 - The guide was created with the goal of making the user able to connect and perform action on the database using [MySQL Workbench](https://dev.mysql.com/downloads/workbench/), but you are also able to use the Terminal or Bash directly if you prefer.
 
@@ -33,7 +42,6 @@ Some basic information about the creation of this guide:
 - Tested on both Windows and Mac
 - Connected to both the Master and Slave through [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) to perform queries.
 - Users for the MySQL part of the Master and Slave was created directly through the droplet and a Terminal/Bash
-
 
 -----
 
@@ -228,14 +236,61 @@ After having worked out the various setup kinks, the current speed seems like a 
 
 #### Assignment 5
 
------
+*Make a transaction of several updates on the Singapore database, and verify that no changes happens to the European database until after the commit of the transaction.*
 
-## Review
+Using the following transaction on the Master droplet, will not affect the Slave droplet, since the transaction is not commited:
 
-- Verify that you are able to set up your own slave of the database you review.
-- Verify that you can update the master database and see the changes to your database.
+```mysql
+START TRANSACTION;
+	UPDATE customers SET customerName = "RadeonXRay" WHERE customerNumber=497;
+```
+
+However, the following transaction below will be afecting both the Master droplet and the Slave droplet:
+
+```mysql
+START TRANSACTION;
+	UPDATE customers SET customerName = "RadeonXRay" WHERE customerNumber=497;
+COMMIT;
+```
 
 ------
+
+# Other information - NOT IMPORTANT! Read only if you want bonus info!
+
+Following information is just to inform you (and better help me remember) how to recreate other aspects of this assignment. These steps are not required in order to create your slave, since the information is already provided in the guide
+
+### See the Master Status
+
+Run the following command in the Master-droplet to create a Replication user, that will be used for connecting the slave droplet with the master droplet:
+
+`GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'password';`
+
+
+If you want to create the slave user from the ground up, connect to my Master Droplet (info can be found in the peergrade-file), login to the MySQL-part of the droplet and enter the following command:
+
+`SHOW MASTER STATUS;`
+
+This will show you:
+
+`File             | Position | Binlog_Do_DB | Binlog_Ignore_DB`
+
+Take that structure into consideration when looking at the statement run in the slave:
+
+`CHANGE MASTER TO MASTER_HOST='[CHECKPEERGRADEFORIP]',MASTER_USER='[CHECKPEERGRADEFORUSERNAME]', MASTER_PASSWORD='[CHECKPEERGRADEFORPASSWORD]', MASTER_LOG_FILE='[CHECKPEERGRADEFORMASTERLOGFILE]', MASTER_LOG_POS= [CHECKPEERGRADEFORPOS#];`
+
+Breaking the info down:
+
+`CHANGE MASTER TO MASTER_HOST` is the IP to the Master/Host Droplet
+
+`MASTER_USER` is actually the Slave User in our example
+
+`MASTER_PASSWORD` Password for the Slave User
+
+`Master_Log_File` is the whole name found under `File` in th `SHOW MASTER STATUS`
+
+`Master_Log_POS` is the number under `Position` in th `SHOW MASTER STATUS`
+
+----------
 
 #### Guides used for this assignment
 
