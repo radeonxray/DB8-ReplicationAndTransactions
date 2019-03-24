@@ -7,6 +7,13 @@ Slides: https://github.com/datsoftlyngby/soft2019spring-databases/blob/master/le
 
 ------
 
+## Hand-in
+You need to document enough of your server for your reviewer to be able to set-up a new slave of your server. You need to make a database user which allow your reviewer to be able to make an update to your master database to verify that the slave updates correctly.
+
+- Put password in a special file for peergrade, so it is not on github.
+
+-----
+
 ## VERY IMPORTANT
 
 - This guide for setting up a new Slave, has been created using a **Ubuntu Droplet 18.04**. If you are using an older Ubuntu-version, there might be some discrepancies!
@@ -15,18 +22,29 @@ Slides: https://github.com/datsoftlyngby/soft2019spring-databases/blob/master/le
 
 - In the same file as mentioned above, you will also find the login information for the Master droplet, in which you need to execute the various queries to see the effect in your droplet
 
------
+- The guide was created with the goal of making the user able to connect and perform action on the database using [MySQL Workbench](https://dev.mysql.com/downloads/workbench/), but you are also able to use the Terminal or Bash directly if you prefer.
 
-## Hand-in
-You need to document enough of your server for your reviewer to be able to set-up a new slave of your server. You need to make a database user which allow your reviewer to be able to make an update to your master database to verify that the slave updates correctly.
+------
+## Tools and other information
 
-- Put password in a special file for peergrade, so it is not on github.
+Some basic information about the creation of this guide:
+- **Master Server**: Singapore
+- **Slave Server**: Frankfurt
+- Tested on both Windows and Mac
+- Connected to both the Master and Slave through [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) to perform queries.
+- Users for the MySQL part of the Master and Slave was created directly through the droplet and a Terminal/Bash
+
 
 -----
 
 ## Setup
 
+The following is a guide on how to setup your own fresh droplet as a Slave to my Master Database. You might want to have a notepad open to note information such as usernames and passwords for later.
+
 ### Update and upgrade Droplet
+
+Login to your Droplet and run the following commands: 
+
 ```shell
 apt-get update
 ```
@@ -60,15 +78,25 @@ Flush the priviligies to confirm the new changes:
 FLUSH PRIVILEGES;
 ```
 
+Check that the user was created (this does not check that the privilges was flushed!)
+
+```mysql
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+```
+
+The reason we are creating a new user and not just stick with the 'root' user provided with mysql, is because we want to be able to remotely connect to the slave (hence why the '[username]'@'%' and not '[username]'@'localhost') through a program like [MySQL Workbench](https://dev.mysql.com/downloads/workbench/), and you don't want to expose the 'root' user to remote access in that way.
+
+Furthermore, one could agrue about giving the mysql user privileges to basically "everything" in the slave, but that discussion is for another day (:  
+
 ----------------
 
 ### Setup Database
 
-Having now setup the basic things in your droplets, we now need to download and setup the Database.
+Having now setup the basic things in your droplets, we now need to download and setup the actual Database in Mysql.
 
 #### CreateTables.sql
 
-In your droplet, download the 'CreateTables'-file file:
+In your droplet (preferable the place you are placed right when you login and  connect to your droplet), download the 'CreateTables'-file file:
 
 `wget https://raw.githubusercontent.com/radeonxray/DB-Assignment6/master/CreateTables.sql`
 
@@ -125,7 +153,7 @@ bind-address	=[INSERT YOUR DROPLETS IP ADDRESS]
 server-id     = 3
 log_bin       = /var/log/mysql/mysql-bin.log
 ```
-*Note: There might be mutiple tester of this code and since the **server-id** has to be unique, you might want to use a random number between 3-999 if you get an error*
+*Note: There might be mutiple testers/reviewers of this project and since the **server-id** has to be unique, you might want to use a random number between 3-999 if you get an error*
 
 Locate the following line:
 ```shell
@@ -160,7 +188,7 @@ CHANGE MASTER TO MASTER_HOST='[CHECKPEERGRADEFORIP]',MASTER_USER='[CHECKPEERGRAD
 
 ```
 
-Having executed the correct query, run the following mysql command to start the slave:
+Having executed the correct query with the right information/data, run the following mysql command to start the slave:
 
 `start slave;`
 
@@ -168,17 +196,35 @@ Then check the status of the slave with the following mysql command:
 
 `SHOW SLAVE STATUS\G`
 
-You really want to see ` Slave_IO_State` stating *Waiting for Master to send event*, and both `Slave_IO_Running` and ` Slave_SQL_Running` stating ´Yes´.
+You really want to check that ` Slave_IO_State` states *Waiting for Master to send event*, and both `Slave_IO_Running` and ` Slave_SQL_Running` states ´Yes´.
 
-If all the above has been successfully executed, you are now ready to run queries to the Master DB and see the effects in your slave Database!
+If there is an issue in connecting, you can try starting slave with a command to skip over it:
+
+```mysql
+SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+```
+
+Followed by:
+
+`start slave;`
+
+If all the above has been successfully executed, you are now ready to run queries to the Master DB and see the effects in your slave Database! You can run the queries directly your Terminal (Mac) or Bash (Windows), or connect to your slave using [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
  
 ### Test Queries
 
 #### Assignment 4
 
+*Make an insert in one of the tables in singapore, and see how long it takes for the tables in Europe to update.*
+
+Tested the speed of communication between the Master and Slave using the following query:
+
 ```mysql
 INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, city, state, postalCode, country, creditLimit) VALUES (497 'Ceo', 'Olsen', 'Christian', '31431716', 'Peter Fabers Gade 26 th', 'Denmark', 'Copenhagen', '2200', 'Denmark', '100000.00'); 
 ```
+After having worked out the various setup kinks, the current speed seems like a fraction of a seconds, so no real impact (as of now)
+
+-----
+
 
 #### Assignment 5
 
@@ -189,3 +235,13 @@ INSERT INTO customers (customerNumber, customerName, contactLastName, contactFir
 - Verify that you are able to set up your own slave of the database you review.
 - Verify that you can update the master database and see the changes to your database.
 
+------
+
+#### Guides used for this assignment
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-master-slave-replication-in-mysql 
+https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04
+https://dba.stackexchange.com/questions/21119/how-do-i-completely-disable-mysql-replication
+https://dba.stackexchange.com/questions/151680/master-slave-mysql-error-in-replication
+http://lasanthals.blogspot.com/2012/09/mysql-replication-server-configuration.html
+https://dev.mysql.com/doc/refman/8.0/en/commit.html 
