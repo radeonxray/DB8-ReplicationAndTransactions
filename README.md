@@ -184,10 +184,9 @@ After you have done all of the above changes to the ```mysqld.cnf```-file, save 
 sudo service mysql restart
 ```
 
-
 ### Start Slave in MySQL
 
-Run the following command in MySQL to setup the slave droplet with the slave-user:
+After the restart is complete, run the following command in MySQL to setup the slave droplet with the slave-user:
 
 ***Important**: Check the Peergrade-handin for the file containing the correct script with the correct information! The command below is just a placeholder to show you what the command actually looks like*
 
