@@ -218,6 +218,8 @@ Followed by:
 
 If all the above has been successfully executed, you are now ready to run queries to the Master DB and see the effects in your slave Database! You can run the queries directly your Terminal (Mac) or Bash (Windows), or connect to your slave using [MySQL Workbench](https://dev.mysql.com/downloads/workbench/)
  
+-------
+
 ### Test Queries
 
 #### Assignment 4
@@ -232,7 +234,6 @@ INSERT INTO customers (customerNumber, customerName, contactLastName, contactFir
 After having worked out the various setup kinks, the current speed seems like a fraction of a seconds, so no real impact (as of now)
 
 -----
-
 
 #### Assignment 5
 
