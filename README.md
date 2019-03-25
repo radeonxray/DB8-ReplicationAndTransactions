@@ -54,10 +54,10 @@ The following is a guide on how to setup your own fresh droplet as a Slave to my
 Login to your Droplet and run the following commands: 
 
 ```shell
-apt-get update
+sudo apt-get update
 ```
 ```shell
-apt-get upgrade
+sudo apt-get upgrade
 ```
 
 ### Install MySQL
@@ -95,6 +95,12 @@ SELECT user,authentication_string,plugin,host FROM mysql.user;
 The reason we are creating a new user and not just stick with the 'root' user provided with mysql, is because we want to be able to remotely connect to the slave (hence why the '[username]'@'%' and not '[username]'@'localhost') through a program like [MySQL Workbench](https://dev.mysql.com/downloads/workbench/), and you don't want to expose the 'root' user to remote access in that way.
 
 Furthermore, one could argue about giving the mysql user privileges to basically "everything" in the slave, but that discussion is for another day (:  
+
+Now that MySQL has been installed and very roughly setup, exit MySQL and lets get on setting up the database in MySQL.
+
+```mysql
+exit
+```
 
 ----------------
 
@@ -139,6 +145,13 @@ Select the Schema to be used
 ```mysql
 use classicmodels
 ```
+
+You should now have the `classicmodels` database setup in MySQL. Next, we'll look at making the final configuration to your MySQL setup, in order for your droplet to act and perform as an actual Slave to my Master Droplet and Database, so exit MySQL.
+
+```mysql
+exit
+```
+
 -------
 
 ### Edit the mysqld.cnf
