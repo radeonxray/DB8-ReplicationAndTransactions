@@ -80,6 +80,11 @@ Grant priviliges to the new user:
 
 `GRANT ALL PRIVILEGES ON *.* TO '[UserName]'@'%' WITH GRANT OPTION;`
 
+**Suggestions from reviwer:**
+
+Creat a special *replicate slave*-user instead 
+`GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'password';`
+
 Flush the priviligies to confirm the new changes:
 
 ```mysql
@@ -116,7 +121,7 @@ In your droplet (preferable the place you are placed right when you login and  c
 
 #### Classicmodels.sql
 
-There are 2 options to download the Database to your Droplet (you only need to chose and do one of them!):
+There are 3 options to download the Database to your Droplet (you only need to chose and do one of them!):
 
 ##### 1: Scp
 Copy the `classicmodels.sql`-file found in this github repo to your droplet.
@@ -129,8 +134,11 @@ scp classicmodels.sql [username]@[dropletIP]:classicmodels.sql
 
 Download the `classicmodels.sql`-file directly from the repo and onto your droplet, using the following command:
 
-`wget https://github.com/radeonxray/DB8-ReplicationAndTransactions/blob/master/classicmodels.sql`
+`wget https://raw.githubusercontent.com/radeonxray/DB8-ReplicationAndTransactions/master/classicmodels.sql`
 
+#### 3: Copy directly from droplet to droplet
+
+`ssh -A -t root@<old server ip> scp /root/classicmodels.sql root@<new server ip>:/root/classicmodels.sql`
 
 #### Create the DB
 
